@@ -1,13 +1,6 @@
 package team147;
 
 
-
-//BRANCH TEST - SK
-
-
-
-
-
 import java.util.Random;
 
 import battlecode.common.Clock;
@@ -182,7 +175,7 @@ public class RobotPlayer {
 	private static void soldier() throws GameActionException {
 		while (true) {
 			attackEnemyZero();
-			moveTowardsHQ();
+			moveTowardsEnemyHQ();
 			rc.yield();
 		}
 
@@ -271,8 +264,26 @@ public class RobotPlayer {
 
 	}
 
+	
+	//Start of SK code 1/9
+	
 	private static void beaver() throws GameActionException {
 		while (true) {
+			//These should be enums... not sure how to implement in a method.
+			
+			//**Beavers move away from HQ as they mine. (We don't want to clog up the area around HQ) */
+			initialDisperseAndMine();
+			
+			//**Run away if enemy combat units are within range */
+			retreat();
+			
+			//**Building methods*/
+			
+			//**OTHER METHODS? */
+			
+			
+			
+			//Previous code:
 			mine();
 			moveAround();
 			build(Clock.getRoundNum() > 350 ? RobotType.BARRACKS
@@ -280,6 +291,67 @@ public class RobotPlayer {
 		}
 	}
 
+
+	private static void retreat() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void initialDisperseAndMine() throws GameActionException {
+		//Mining is first priority
+		mine();
+		//Move away from our HQ:
+		if(rc.getID()%3==0){
+			moveTowardsEnemyHQ();
+		}
+		else if(rc.getID()%3==1){
+			Direction clockwiseOfEnemyHQ = rc.getLocation().directionTo(enemyHQLoc).rotateRight();
+			moveTowardsDirection(clockwiseOfEnemyHQ);		
+		}
+		else if(rc.getID()%3==2){
+			Direction counterclockwiseOfEnemyHQ = rc.getLocation().directionTo(enemyHQLoc).rotateLeft();
+			moveTowardsDirection(counterclockwiseOfEnemyHQ);		
+		}
+	}
+
+	//END OF BEHAVIOR METHODS (States)
+	
+	
+//Another crude movement method...
+	private static void moveTowardsDirection(Direction someDirection) throws GameActionException {
+	
+		if(rc.isCoreReady() && rc.canMove(someDirection)){
+			rc.move(someDirection);
+		}
+		else if(rc.isCoreReady() && (rc.canMove(someDirection.rotateLeft()) || rc.canMove(someDirection.rotateRight()))){
+			if(rc.getID()%2==1){
+				rc.move(someDirection.rotateLeft());
+			}
+			if(rc.getID()%2==0){
+				rc.move(someDirection.rotateRight());
+			}
+		}
+		else if(rc.isCoreReady() && (rc.canMove(someDirection.rotateLeft().rotateLeft()) || rc.canMove(someDirection.rotateRight().rotateRight()))){
+			if(rc.getID()%2==1){
+				rc.move(someDirection.rotateLeft().rotateLeft());
+			}
+			if(rc.getID()%2==0){
+				rc.move(someDirection.rotateRight().rotateRight());
+			}
+		}
+		else{
+			if(rc.isCoreReady() && rc.canMove(someDirection.opposite())){
+				rc.move(someDirection.opposite());
+			}
+		}
+		
+	}
+
+	///End of my code -----------------
+	
+	
+	
+	
 	private static void build(RobotType building) throws GameActionException {
 		if (rc.hasBuildRequirements(building) && rc.isCoreReady()) {
 			for (int i = 0; i < 8; i++) {
@@ -303,13 +375,13 @@ public class RobotPlayer {
 
 	private static void basher() throws GameActionException {
 		while (true) {
-			moveTowardsHQ();
+			moveTowardsEnemyHQ();
 			rc.yield();
 		}
 
 	}
 
-	private static void moveTowardsHQ() throws GameActionException {
+	private static void moveTowardsEnemyHQ() throws GameActionException {
 		if (rc.isCoreReady()) {
 			if (rc.canMove(currentDirection)) {
 				if (rand.nextInt(100) > 10) {
