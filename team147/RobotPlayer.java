@@ -1,7 +1,6 @@
 package team147;
 
 import java.util.Random;
-
 import battlecode.common.Clock;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
@@ -17,13 +16,15 @@ public class RobotPlayer {
 	private static Random rand;
 	private static Direction currentDirection;
 	private static MapLocation enemyHQLoc;
-
+	private static MapLocation[] enemyTowers;
+	
 	public static void run(RobotController myRC) {
 
 		rc = myRC;
 		// initialize random number generator
 		rand = new Random(rc.getID());
 		currentDirection = randomDirection();
+		
 		try {
 			switch (rc.getType()) {
 			case AEROSPACELAB:
@@ -97,10 +98,187 @@ public class RobotPlayer {
 		}
 	} // end of run method
 
+
+	// the following methods are all for the above switch statement
+	private static void trainingfield() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of trainingfield method
+
+	private static void technologyinstitute() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of technologyinstitute method
+
+	private static void tower() throws GameActionException {
+		while (true) {
+			attackEnemyZero();
+			transferSupply();
+			rc.yield();
+		}
+	} // end of tower method
+
+	private static void tankfactory() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of tankfactory method
+
+	private static void tank() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of tank method
+
+	private static void supplydepot() throws GameActionException {
+		while (true) {
+			transferSupply();
+			rc.yield();
+		}
+	} // end of supplydepot method
+
+	private static void soldier() throws GameActionException {
+		while (true) {
+			attackEnemyZero();
+			moveTowardsHQ();
+			transferSupply();
+			rc.yield();
+		}
+	} // end of soldier method
+
+	private static void missile() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of missile method
+
+	private static void minerfactory() throws GameActionException {
+		while (true) {
+			spawnRobot(RobotType.MINER);
+		}
+	} // end of minerfactory method
+
+	private static void miner() throws GameActionException {
+		while (true) {
+			mine();
+			moveAround();
+			attackEnemyZero();
+			transferSupply();
+			rc.yield();
+		}
+	} // end of miner method
+
+	private static void launcher() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of launcher method
+
+	private static void hq() throws GameActionException {
+		while (true) {
+			attackEnemyZero();
+			spawnRobot(RobotType.BEAVER);
+			transferSupply();
+			rc.yield();
+		}
+	} // end of hq method
+
+	private static void helipad() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of helipad
+
+	private static void handwashstation() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of handwashstation method
+
+	private static void drone() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of drone method
+
+	private static void computer() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of computer method
+
+	private static void commander() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of commander method
+
+	private static void beaver() throws GameActionException {
+		while (true) {
+			mine();
+			moveAround();
+			if(rand.nextInt(100) > 50) {
+			build(Clock.getRoundNum() > 350 ? RobotType.BARRACKS
+					: RobotType.MINERFACTORY);
+			} else {
+				buildSupplyDepotNearHQ();
+			}
+			attackEnemyZero();
+			transferSupply();
+			rc.yield();
+		}
+	} // end of beaver method
+
+	private static void basher() throws GameActionException {
+		while (true) {
+			moveTowardsHQ();
+			transferSupply();
+			rc.yield();
+		}
+	} // end of basher method
+
+	private static void barracks() throws GameActionException {
+		while (true) {
+			spawnRobot(rand.nextDouble() > .5 ? RobotType.BASHER
+					: RobotType.SOLDIER);
+		}
+	} // end of barracks method
+
+	private static void aerospacelab() {
+		while (true) {
+			rc.yield();
+		}
+	} // end of aerospacelab method
+	
+	// end of switch methods --------------------------------------------------------------
+	// ------------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------------------
+	// below are all of the methods used above
+	
+	private static void attackEnemyTowerZero() throws GameActionException {
+		enemyTowers = rc.senseEnemyTowerLocations();
+		if(rc.getLocation().distanceSquaredTo(enemyTowers[0]) <= rc.getType().attackRadiusSquared) {
+			rc.attackLocation(enemyTowers[0]);
+		} else {
+		moveTowardDestination(enemyTowers[0]);
+	  }	
+	} // end of attackEnemyTowerZero method
+	
+	// this method returns a rally point halfway between our HQ and the attack location
+	private static MapLocation getRallyPoint(MapLocation attackLocation) {
+		MapLocation ourHQ = rc.senseHQLocation();
+		int rallyX = (ourHQ.x + attackLocation.x)/2;
+		int rallyY = (ourHQ.y + attackLocation.y)/2;
+		MapLocation rallyPoint = new MapLocation(rallyX, rallyY);
+		return rallyPoint;
+	} // end of getRallyPoint method
+	
 	private static Direction randomDirection() {
 		return Direction.values()[rand.nextInt(8)];
 	} // end of randomDirection method
-
+	
 	private static void moveAround() throws GameActionException {
 		if (rc.isCoreReady()) {
 			if (rc.canMove(currentDirection)) {
@@ -117,203 +295,7 @@ public class RobotPlayer {
 			}
 		}
 	} // end of moveAround method
-
-	private static void attackEnemyZero() throws GameActionException {
-		if (rc.isWeaponReady()) {
-			RobotInfo[] enemies = rc.senseNearbyRobots(
-					rc.getType().attackRadiusSquared, rc.getTeam().opponent());
-			if (1 <= enemies.length) {
-				if(rc.canAttackLocation(enemies[0].location)){
-					rc.attackLocation(enemies[0].location);
-				}
-			}
-		}
-	} // end of attackEnemyZero method
-
-	private static void trainingfield() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void technologyinstitute() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void tower() throws GameActionException {
-		while (true) {
-			attackEnemyZero();
-			rc.yield();
-		}
-
-	}
-
-	private static void tankfactory() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void tank() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void supplydepot() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void soldier() throws GameActionException {
-		while (true) {
-			attackEnemyZero();
-			moveTowardsHQ();
-			transferSupply();
-			rc.yield();
-		}
-
-	}
-
-	private static void missile() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void minerfactory() throws GameActionException {
-		while (true) {
-			spawnRobot(RobotType.MINER);
-		}
-
-	}
-
-	private static void miner() throws GameActionException {
-		while (true) {
-			mine();
-			moveAround();
-			attackEnemyZero();
-			//transferSupply();
-			rc.yield();
-		}
-	} // end of miner method
-
-	private static void launcher() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void hq() throws GameActionException {
-		while (true) {
-			attackEnemyZero();
-			spawnRobot(RobotType.BEAVER);
-			transferSupply();
-			rc.yield();
-		}
-	} // end of hq method
-
-	private static void spawnRobot(RobotType type) throws GameActionException {
-		if (rc.hasSpawnRequirements(type) && rc.isCoreReady()) {
-			for (Direction d : Direction.values()) {
-				if (rc.canSpawn(d, type)) {
-					rc.spawn(d, type);
-					break;
-				}
-			}
-		}
-	} // end of spawnRobot method
-
-	private static void helipad() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void handwashstation() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void drone() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void computer() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void commander() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
-
-	private static void beaver() throws GameActionException {
-		while (true) {
-			mine();
-			moveAround();
-			if(rand.nextInt(100) > 50) {
-			build(Clock.getRoundNum() > 350 ? RobotType.BARRACKS
-					: RobotType.MINERFACTORY);
-			} else {
-				buildSupplyDepot();
-			}
-			transferSupply();
-			rc.yield();
-		}
-	} // end of beaver method
-
-	private static void build(RobotType building) throws GameActionException {
-		if (rc.hasBuildRequirements(building) && rc.isCoreReady()) {
-			for (int i = 0; i < 8; i++) {
-				if (rc.canBuild(currentDirection, building)) {
-					rc.build(currentDirection, building);
-					break;
-				} else
-					currentDirection = currentDirection.rotateRight();
-			}
-		}
-	} // end of build method
-
-	private static void mine() throws GameActionException {
-		int mineMax = (rc.getType() == RobotType.MINER ? GameConstants.MINER_MINE_MAX
-				: GameConstants.BEAVER_MINE_MAX);
-
-		if (rc.isCoreReady() && rc.senseOre(rc.getLocation()) > mineMax) {
-			rc.mine();
-		}
-	} // end of mine method
-
-	private static void basher() throws GameActionException {
-		while (true) {
-			moveTowardsHQ();
-			//transferSupply();
-			rc.yield();
-		}
-
-	}
-
+	
 	private static void moveTowardsHQ() throws GameActionException {
 		if (rc.isCoreReady()) {
 			if (rc.canMove(currentDirection)) {
@@ -333,33 +315,73 @@ public class RobotPlayer {
 			}
 		}
 	} // end of moveTowardsHQ method
-
-	private static void barracks() throws GameActionException {
-		while (true) {
-			spawnRobot(rand.nextDouble() > .5 ? RobotType.BASHER
-					: RobotType.SOLDIER);
-		}
-
-	}
-
-	private static void aerospacelab() {
-		while (true) {
-			rc.yield();
-		}
-
-	}
 	
-	private static void buildSupplyDepot() throws GameActionException {
+	private static void attackEnemyZero() throws GameActionException {
+		if (rc.isWeaponReady()) {
+			RobotInfo[] enemies = rc.senseNearbyRobots(
+					rc.getType().attackRadiusSquared, rc.getTeam().opponent());
+			if (1 <= enemies.length) {
+				if(rc.canAttackLocation(enemies[0].location))
+					rc.attackLocation(enemies[0].location);
+			}
+		}
+	} // end of attackEnemyZero method
+	
+	private static void mine() throws GameActionException {
+		int mineMax = (rc.getType() == RobotType.MINER ? GameConstants.MINER_MINE_MAX
+				: GameConstants.BEAVER_MINE_MAX);
+
+		if (rc.isCoreReady() && rc.senseOre(rc.getLocation()) > mineMax) {
+			rc.mine();
+		}
+	} // end of mine method
+	
+	private static void spawnRobot(RobotType type) throws GameActionException {
+		if (rc.hasSpawnRequirements(type) && rc.isCoreReady()) {
+			for (Direction d : Direction.values()) {
+				if (rc.canSpawn(d, type)) {
+					rc.spawn(d, type);
+					break;
+				}
+			}
+		}
+	} // end of spawnRobot method
+	
+	private static void build(RobotType building) throws GameActionException {
+		if (rc.hasBuildRequirements(building) && rc.isCoreReady()) {
+			for (int i = 0; i < 8; i++) {
+				if (rc.canBuild(currentDirection, building)) {
+					rc.build(currentDirection, building);
+					break;
+				} else
+					currentDirection = currentDirection.rotateRight();
+			}
+		}
+	} // end of build method
+	
+	private static void buildSupplyDepotNearHQ() throws GameActionException {
 		MapLocation currentLoc = rc.getLocation();
 		int distanceFromHQ = currentLoc.distanceSquaredTo(rc.senseHQLocation());
-		if (Clock.getRoundNum() < 500) {
+		if (Clock.getRoundNum() < 1500) {
 			if (rand.nextInt(100) < 10) {
-				if (distanceFromHQ < 40 && distanceFromHQ > 20) {
+				if (distanceFromHQ < 60 && distanceFromHQ > 10) {
 					build(RobotType.SUPPLYDEPOT);
 				}
 			}
 		}
-	} // end of buildSupplyDepot method
+	} // end of buildSupplyDepotNearHQ method
+	
+	// checks to see how many nearby allies have zero supply
+	private static int checkSupplyLevels() throws GameActionException {
+		RobotInfo[] nearbyAllies = rc.senseNearbyRobots(rc.getLocation(), rc.getType().sensorRadiusSquared, rc.getTeam());
+		int zeroSupplyCounter = 0;
+		for (RobotInfo robot : nearbyAllies) {
+			if (robot.supplyLevel == 0) {
+				zeroSupplyCounter++;
+			}
+		}
+		return zeroSupplyCounter;
+	} // end of checkSupplyLevels method
 	
 	// transfer supply to other robots that have less supply
 	private static void transferSupply() throws GameActionException {
@@ -383,6 +405,17 @@ public class RobotPlayer {
 		}
 	  }
 	} // end of transferSupply method
+	
+	private static void moveTowardDestination(MapLocation dest) throws GameActionException {
+		Direction toDest = rc.getLocation().directionTo(dest);
+		Direction[] directions = {toDest, toDest.rotateLeft(), toDest.rotateLeft().rotateLeft(), toDest.rotateRight(), toDest.rotateRight().rotateRight()};
+		for (Direction d : directions) {
+			if (rc.canMove(d) && rc.isCoreReady()) {
+				rc.move(d);
+				break;
+			}
+		}
+	} // end of moveTowardDestination method
 	
 	// this method isn't being used, but could be used for efficient direction changing
 	private static int directionNum(Direction d) {
