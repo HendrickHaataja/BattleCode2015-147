@@ -123,7 +123,9 @@ public class RobotPlayer {
 			RobotInfo[] enemies = rc.senseNearbyRobots(
 					rc.getType().attackRadiusSquared, rc.getTeam().opponent());
 			if (1 <= enemies.length) {
-				rc.attackLocation(enemies[0].location);
+				if(rc.canAttackLocation(enemies[0].location)){
+					rc.attackLocation(enemies[0].location);
+				}
 			}
 		}
 	} // end of attackEnemyZero method
