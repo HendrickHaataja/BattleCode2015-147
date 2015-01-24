@@ -100,4 +100,10 @@ public class Beaver extends BaseRobot {
 	public void defaultTurnEndAction() throws GameActionException {
 		rc.yield();
 	}
+
+	@Override
+	public void defaultRallyAction() throws GameActionException {
+		// TODO Auto-generated method stub
+
+	}
 }

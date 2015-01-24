@@ -656,4 +656,6 @@ public abstract class BaseRobot {
 			return Direction.NONE;
 		}
 	} // end of directionNum method
+
+	public abstract void defaultRallyAction() throws GameActionException;
 }

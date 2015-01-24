@@ -59,4 +59,10 @@ public class Handwashstation extends BaseRobot {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void defaultRallyAction() throws GameActionException {
+		// TODO Auto-generated method stub
+
+	}
 }

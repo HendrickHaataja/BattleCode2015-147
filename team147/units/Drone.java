@@ -29,9 +29,12 @@ public class Drone extends BaseRobot {
 			case PANIC:
 				defaultPanicAction();
 				break;
+			case RALLY:
+				defaultRallyAction();
+				break;
 			default:
 				break;
-			}
+          }
 
 			defaultTurnEndAction();
 			stateMachine.sendStateMessages();
@@ -42,6 +45,12 @@ public class Drone extends BaseRobot {
 	@Override
 	public void defaultPanicAction() throws GameActionException {
 		moveToSafety();
+	}
+
+	@Override
+	public void defaultRallyAction() throws GameActionException {
+		attackEnemyZero();
+		moveTowardDestination(messaging.getRallyPoint());
 	}
 
 	@Override
@@ -82,4 +91,5 @@ public class Drone extends BaseRobot {
 		transferSupply();
 		rc.yield();
 	}
+
 }

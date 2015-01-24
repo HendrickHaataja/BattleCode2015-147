@@ -30,6 +30,9 @@ public class Soldier extends BaseRobot {
 			case PANIC:
 				defaultPanicAction();
 				break;
+			case RALLY:
+				defaultRallyAction();
+				break;
 			default:
 				break;
           }
@@ -43,6 +46,12 @@ public class Soldier extends BaseRobot {
 	@Override
 	public void defaultPanicAction() throws GameActionException {
 		moveToSafety();
+	}
+
+	@Override
+	public void defaultRallyAction() throws GameActionException {
+		attackEnemyZero();
+		moveTowardDestination(messaging.getRallyPoint());
 	}
 
 	@Override
