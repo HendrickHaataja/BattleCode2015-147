@@ -17,9 +17,8 @@ public class Tower extends BaseRobot {
 
 		while (true) {
 			attackEnemyZero();
-			numEnemiesInSight = rc.senseNearbyRobots(sensorRadiusSquared,
+			numEnemiesInSight = rc.senseNearbyRobots(attackRadiusSquared,
 					enemyTeam).length;
-
 			if (numEnemiesInSight > maxNumEnemiesSeen) {
 				messaging.setTowerPressure(numEnemiesInSight, towerNumber);
 				maxNumEnemiesSeen = numEnemiesInSight;
@@ -30,7 +29,7 @@ public class Tower extends BaseRobot {
 	}
 
 	private int getTowerNumberByMapLocation(MapLocation location) {
-		MapLocation towers[] = rc.senseEnemyTowerLocations();
+		MapLocation towers[] = rc.senseTowerLocations();
 		MapLocation myLoc = rc.getLocation();
 
 		for (int i = 0; i < towers.length; i++) {
@@ -87,5 +86,11 @@ public class Tower extends BaseRobot {
 	public void defaultTurnEndAction() throws GameActionException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void defaultRallyAction() throws GameActionException {
+		// TODO Auto-generated method stub
+
 	}
 }

@@ -89,4 +89,10 @@ public class Miner extends BaseRobot {
 		transferSupply();
 		rc.yield();
 	}
+
+	@Override
+	public void defaultRallyAction() throws GameActionException {
+		// TODO Auto-generated method stub
+
+	}
 }

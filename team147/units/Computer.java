@@ -57,6 +57,11 @@ public class Computer extends BaseRobot {
 	@Override
 	public void defaultTurnEndAction() throws GameActionException {
 		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public void defaultRallyAction() throws GameActionException {
+		// TODO Auto-generated method stub
+
 	}
 }

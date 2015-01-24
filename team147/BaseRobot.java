@@ -235,13 +235,13 @@ public abstract class BaseRobot {
 
 	public MapLocation getTowerLocationByNumber(int towerNumber) {
 		MapLocation towers[] = rc.senseTowerLocations();
-		return towers[towerNumber];
+		return towers[towerNumber % towers.length];
 	}
 
 	public RobotType getNeededBuilding() throws GameActionException {
 		if (messaging.getNumMinerFactories() < 1)
 			return RobotType.MINERFACTORY;
-		else if (messaging.getNumBarracks() < 4)
+		else if (messaging.getNumBarracks() < 2)
 			return RobotType.BARRACKS;
 		else if (messaging.getNumTankFactories() < 2)
 			return RobotType.TANKFACTORY;
@@ -656,4 +656,6 @@ public abstract class BaseRobot {
 			return Direction.NONE;
 		}
 	} // end of directionNum method
+
+	public abstract void defaultRallyAction() throws GameActionException;
 }

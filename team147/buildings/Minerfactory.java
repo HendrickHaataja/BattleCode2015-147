@@ -63,4 +63,10 @@ public class Minerfactory extends BaseRobot {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public void defaultRallyAction() throws GameActionException {
+		// TODO Auto-generated method stub
+
+	}
 }

@@ -29,6 +29,9 @@ public class Tank extends BaseRobot {
 			case PANIC:
 				defaultPanicAction();
 				break;
+			case RALLY:
+				defaultRallyAction();
+				break;
 			default:
 				break;
 			}
@@ -45,9 +48,15 @@ public class Tank extends BaseRobot {
 	}
 
 	@Override
+	public void defaultRallyAction() throws GameActionException {
+		attackEnemyZero();
+		moveTowardDestination(messaging.getRallyPoint());
+	}
+
+	@Override
 	public void defaultAttackAction() throws GameActionException {
 		attackLeastHealthyEnemy();
-		if(rc.getRoundLimit() - Clock.getRoundNum() > 360)
+		if (rc.getRoundLimit() - Clock.getRoundNum() > 360)
 			safeMoveTowardDestination(getClosestTowerLocation());
 		else
 			moveTowardDestination(getClosestTowerLocation());
@@ -82,4 +91,5 @@ public class Tank extends BaseRobot {
 		transferSupply();
 		rc.yield();
 	}
+
 }

@@ -68,6 +68,11 @@ public class Hq extends BaseRobot {
 		rc.yield();
 	}
 
+	@Override
+	public void defaultRallyAction() throws GameActionException {
+		// TODO Auto-generated method stub
+
+	}
 	
 
 } // end of HQ class
